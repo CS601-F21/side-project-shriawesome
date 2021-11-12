@@ -1,3 +1,14 @@
+Handwritten Text Recognition
+============================
+
+## Technology Stack
+1. Python : Programming Language
+2. Cherrypy : Object-oriented Web Framework for Python
+3. Docker : Deployment
+4. TensorFlow - Keras : Deep learning Frameworks for building Model Architecture
+5. Dataset : [IAM Handwriting Database](https://fki.tic.heia-fr.ch/databases/iam-handwriting-database)
+
+
 Side Project
 ============
 
