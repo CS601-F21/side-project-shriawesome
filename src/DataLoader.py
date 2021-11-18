@@ -52,6 +52,19 @@ class DataLoader:
         return os.path.getsize(imgPath)
 
 
+    """
+    Limits the size of the text to the maximum text length.
+
+    Parameters
+    -----------
+    - text : raw text
+    - maxTextLen : Maximum text size
+
+    Returns
+    -------
+    String within the maxTextLen
+
+    """
     def processText(self,text,maxTextLen):
         # If a label is very long then the ctc-loss returns an infinite gradient
         # Repeated Letters costs double because of the blank symbol needed to be inserted
