@@ -14,8 +14,9 @@ class DataLoader:
     Helper class for the main class to be used for generating a dataset to be used for model development
     """
 
-    def __init__(self,filePath):
+    def __init__(self,filePath,maxTextLen):
         self.metaFile = filePath
+        self.maxTextLen = maxTextLen
         self.__dataset = []
         self.__chars = set()
 
@@ -50,6 +51,24 @@ class DataLoader:
     def isBadImg(self,imgPath):
         return os.path.getsize(imgPath)
 
+
+    def processText(self,text,maxTextLen):
+        # If a label is very long then the ctc-loss returns an infinite gradient
+        # Repeated Letters costs double because of the blank symbol needed to be inserted
+        cost = 0
+        for i in range (len(text)):
+            if i!=0 and text[i]==text[i-1]:
+                cost+=2
+            else:
+                cost+=1
+
+            if cost>=maxTextLen:
+                text = text[:i]
+                break
+
+        return text
+
+
     """
     Generates a dataset consisting of CombinedData objects for the data to be used for model development/ testing
 
@@ -71,6 +90,7 @@ class DataLoader:
 
                     text = (" ".join(lineData[-1].split("|")))
                     # Get the character vocabulary for a given text
+                    text = self.processText(text.strip(),self.maxTextLen)
                     self.__chars = self.__chars.union(list(text))
                     self.__dataset.append(CombinedData(imgPath,text))
             
@@ -78,5 +98,4 @@ class DataLoader:
         
         except FileNotFoundError:
             print(self.metaFile," : ","File not found!!!")
-            
-    
+        
