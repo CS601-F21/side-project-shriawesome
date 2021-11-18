@@ -91,21 +91,21 @@ class DataLoader:
     """
     def getData(self):
         try:
-            file = open(self.metaFile)
-            for i,line in enumerate(file):
-                if line[0]!="#":
-                    lineData = line.split()
-                    imgPath = self.constructImgPath(lineData[0])
-                    
-                    # Checks if the image size is 0
-                    if not self.isBadImg(imgPath):
-                        continue
+            with open(self.metaFile) as file:
+                for i,line in enumerate(file):
+                    if line[0]!="#":
+                        lineData = line.split()
+                        imgPath = self.constructImgPath(lineData[0])
+                        
+                        # Checks if the image size is 0
+                        if not self.isBadImg(imgPath):
+                            continue
 
-                    text = (" ".join(lineData[-1].split("|")))
-                    # Get the character vocabulary for a given text
-                    text = self.processText(text.strip(),self.maxTextLen)
-                    self.__chars = self.__chars.union(list(text))
-                    self.__dataset.append(CombinedData(imgPath,text))
+                        text = (" ".join(lineData[-1].split("|")))
+                        # Get the character vocabulary for a given text
+                        text = self.processText(text.strip(),self.maxTextLen)
+                        self.__chars = self.__chars.union(list(text))
+                        self.__dataset.append(CombinedData(imgPath,text))
             
             return {"dataset":self.__dataset,"Labels":sorted(self.__chars)}
         
