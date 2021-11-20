@@ -39,6 +39,18 @@ class DataUtils:
         return xTrain, yTrain, xVal, yVal 
 
 
+    """
+    Maps a character to an integer value
+
+    Parameters
+    ----------
+    txt : texutal data to be converted to list of integers
+
+    Returns
+    -------
+    Numpy array
+
+    """
     def charToNum(self,txt):
         labelStr = []
         for alpha in txt:
