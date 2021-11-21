@@ -1,3 +1,5 @@
+from tensorflow._api.v2 import data
+from tensorflow.python.ops.variables import trainable_variables
 import DataLoader
 from ModelConfig import ModelConfig
 from DataUtils import DataUtils
@@ -25,11 +27,14 @@ class Driver:
     
         # Splitting the dataset into training and validation 
         dataUtil = DataUtils(dataSet["Labels"])   
-        xTrain, yTrain, xTest, yTest = dataUtil.splitData(X,Y,0.8)
-        print("Shapes : X_TRAIN : {}, X_VAL : {}, Y_TRAIN : {}, Y_VAL : {}".format(xTrain.shape,xTest.shape,yTrain.shape,yTest.shape))
+        xTrain, yTrain, xVal, yVal = dataUtil.splitData(X,Y,0.8)
+        print("Shapes : X_TRAIN : {}, X_VAL : {}, Y_TRAIN : {}, Y_VAL : {}".format(xTrain.shape,xVal.shape,yTrain.shape,yVal.shape))
         
         # Mapping a string value to an Integer value
         yTrain = list(map(dataUtil.charToNum,yTrain))
-        yTest = list(map(dataUtil.charToNum,yTest))
-        print(len(yTrain),len(yTest))
-       # print(DataUtils.charToNum("hello",dataSet["Labels"],ModelConfig.MAX_TEXT_LEN))
+        yVal = list(map(dataUtil.charToNum,yVal))
+    
+        # Creating efficient input pipelines for tensorflow
+        # trainData, validationData = dataUtil.createPipeline(xTrain, yTrain, xVal, yVal)
+        #print(X[0])
+        dataUtil.processSingleSample("../dataset/lines/h02/h02-004/h02-004-09.png","this is it")
