@@ -1,8 +1,10 @@
+from numpy.lib.type_check import imag
 from tensorflow._api.v2 import data
 from tensorflow.python.ops.variables import trainable_variables
 import DataLoader
 from ModelConfig import ModelConfig
 from DataUtils import DataUtils
+import cv2
 
 import numpy as np
 
@@ -11,6 +13,13 @@ class Driver:
     def saveFile(fileName,data):
         with open("../"+fileName,"w") as file:
             file.write(data)
+
+    def validateData(datapipeline):
+        for batch in datapipeline.take(1):
+            images = batch["image"]
+            labels = batch["label"]
+            cv2.imshow("",np.array(images[1]))
+            cv2.waitKey(0)
 
     if __name__=="__main__":
         # Generate dataset
@@ -33,8 +42,11 @@ class Driver:
         # Mapping a string value to an Integer value
         yTrain = list(map(dataUtil.charToNum,yTrain))
         yVal = list(map(dataUtil.charToNum,yVal))
+
+        print(np.shape(yTrain))
     
         # Creating efficient input pipelines for tensorflow
-        # trainData, validationData = dataUtil.createPipeline(xTrain, yTrain, xVal, yVal)
-        #print(X[0])
-        dataUtil.processSingleSample("../dataset/lines/h02/h02-004/h02-004-09.png","this is it")
+        trainData, validationData = dataUtil.createPipeline(xTrain, yTrain, xVal, yVal)
+        
+        # Validate batches
+        validateData(trainData)

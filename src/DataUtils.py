@@ -14,6 +14,7 @@ class DataUtils:
 
     def __init__(self,charList):
         self.charList = charList
+        tf.compat.v1.enable_eager_execution()
     
     """
     Splits the data into training and testing.
@@ -58,6 +59,7 @@ class DataUtils:
     """
     def charToNum(self,txt):
         labelStr = []
+        txt=txt.strip()
         for alpha in txt:
             labelStr.append(self.charList.index(alpha))
 
@@ -65,37 +67,31 @@ class DataUtils:
 
     def resizeImg(self,img):
         w, h = ModelConfig.IMG_WIDTH, ModelConfig.IMG_HEIGHT
-        img = tf.image.resize(img,[h,w],preserve_aspect_ratio=True)
+        img = tf.image.resize(img,[h,w])
 
         # Padding to be done
-        padHeight = h - img.shape[0]
-        padWidth = w  - img.shape[1]
-        print(padHeight)
+        padHeight = h - tf.shape(img)[0]
+        padWidth = w  - tf.shape(img)[1]
 
         # Padding on both the ends, if even the same amount of padding on top and
         # bottom else more on top and less on bottom
-        if padHeight%2 != 0 :
-            height = padHeight // 2
-            padHeightTop = height + 1
-            padHeightBottom = height
-        else:
-            padHeightTop = padHeightBottom = padHeight // 2 
 
-        if padWidth%2 != 0:
-            width = padWidth // 2
-            padWidthLeft = width + 1
-            padWidthRight = width
-        else:
-            padWidthLeft = padWidthRight = padWidth // 2
+        # if padWidth%2 != 0:
+        #     width = padWidth // 2
+        #     padWidthLeft = width + 1
+        #     padWidthRight = width
+        # else:
+        #     padWidthLeft = padWidthRight = padWidth // 2
 
-        img = tf.pad(img,paddings=[
-            [padHeightTop,padHeightBottom],
-            [padWidthLeft,padWidthRight],
-            [0,0]
-        ],)
+        # img = tf.pad(img,paddings=[
+        #     [padHeightTop,padHeightBottom],
+        #     [padWidthLeft,padWidthRight],
+        #     [0,0]
+        # ],)
 
         img = tf.transpose(img, perm=[1,0,2])
         img = tf.image.flip_left_right(img)
+        
         return img
 
 
@@ -105,22 +101,32 @@ class DataUtils:
         img = tf.io.read_file(imgPath)
         img = tf.io.decode_png(img,1)
         # scalling the image between [0,1]
-        img = tf.image.convert_image_dtype(img, tf.float32]
+        img = tf.image.convert_image_dtype(img, tf.float32)
     
         # Rescaling the image to 64,800    
         img = self.resizeImg(img)
         # print(img.shape)
-        # cv2.imshow("",np.array(img))
-        # cv2.waitKey(0)
+        #cv2.imshow("",np.array(img))
+        #ccv2.waitKey(0)
+
+        return {"image":img,"label":Label}
 
         
 
     def createPipeline(self, xTrain, yTrain, xVal, yVal):
-        trainData = tf.data.Dataset.from_tensor_slices((xTrain,yTrain))
+        # Creating pipeline for training data
+        try:
+            trainData = tf.data.Dataset.from_tensor_slices((xTrain,yTrain))
+            trainData = trainData.map(self.processSingleSample).batch(ModelConfig.BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+            validationData = tf.data.Dataset.from_tensor_slices((xVal,yVal))
+            validationData = validationData.map(self.processSingleSample,num_parallel_calls=tf.data.AUTOTUNE).batch(ModelConfig.BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+        except:
+            print("Error creating a pipeline")
+        
         # encoding the image in a numpy array
-        # trainData = trainData.map(self.encodeSingleSample).batch(ModelConfig.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+       # trainData = trainData.map(self.processSingleSample).batch(ModelConfig.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
         
-        
-        validationData = tf.data.Dataset.from_tensor_slices((xVal,yVal))
-
+        # Creating pipleline for validation data
+       
+        print("'IN")
         return trainData, validationData

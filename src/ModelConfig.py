@@ -9,6 +9,6 @@ class ModelConfig:
     BATCH_SIZE = 10
 
     # Image widht and height
-    IMG_WIDTH = 128
-    IMG_HEIGHT = 32
+    IMG_WIDTH = 512
+    IMG_HEIGHT = 64
 
