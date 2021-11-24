@@ -65,6 +65,14 @@ class DataUtils:
 
         return pad_sequences([labelStr],maxlen=ModelConfig.MAX_TEXT_LEN,padding="post",value=len(self.charList))[0]
 
+    def numToChar(self,indices):
+        txt=[]
+        for idx in indices:
+            if idx<len(self.charList):
+                txt.append(self.charList[idx])
+        return("".join(txt))
+
+    
     def resizeImg(self,img):
         w, h = ModelConfig.IMG_WIDTH, ModelConfig.IMG_HEIGHT
         img = tf.image.resize(img,[h,w])
@@ -117,9 +125,9 @@ class DataUtils:
         # Creating pipeline for training data
         try:
             trainData = tf.data.Dataset.from_tensor_slices((xTrain,yTrain))
-            trainData = trainData.map(self.processSingleSample).batch(ModelConfig.BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+            trainData = trainData.map(self.processSingleSample).batch(ModelConfig.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
             validationData = tf.data.Dataset.from_tensor_slices((xVal,yVal))
-            validationData = validationData.map(self.processSingleSample,num_parallel_calls=tf.data.AUTOTUNE).batch(ModelConfig.BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+            validationData = validationData.map(self.processSingleSample,num_parallel_calls=tf.data.AUTOTUNE).batch(ModelConfig.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
         except:
             print("Error creating a pipeline")
         
