@@ -1,10 +1,10 @@
 import numpy as np
 import tensorflow as tf
 import cv2
-from tensorflow._api.v2 import image
+# from tensorflow._api.v2 import image
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.python.ops.gen_array_ops import pad
-from tensorflow.python.ops.gen_math_ops import Mod
+# from tensorflow.python.ops.gen_array_ops import pad
+# from tensorflow.python.ops.gen_math_ops import Mod
 
 from ModelConfig import ModelConfig
 """

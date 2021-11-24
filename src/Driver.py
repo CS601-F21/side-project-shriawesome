@@ -1,7 +1,5 @@
-from numpy.lib.type_check import imag
-from tensorflow._api.v2 import data
-from tensorflow.python.ops.variables import trainable_variables
 import DataLoader
+from Model import Model
 from ModelConfig import ModelConfig
 from DataUtils import DataUtils
 import cv2
@@ -49,4 +47,10 @@ class Driver:
         trainData, validationData = dataUtil.createPipeline(xTrain, yTrain, xVal, yVal)
         
         # Validate batches
-        validateData(trainData)
+        # validateData(trainData)
+
+        # Creating Model Architecture
+        getModel = Model(dataSet["Labels"])
+        model = getModel.buildModel()
+        model.summary()
+
