@@ -79,10 +79,10 @@ class Driver:
         # validateData(trainData,dataUtil)
 
         # # Creating Model Architecture
-        # getModel = Model(dataSet["Labels"])
-        # model = getModel.buildModel()
-        # # model.summary()
+        getModel = Model(dataSet["Labels"])
+        model = getModel.buildModel()
+        # model.summary()
 
-        # # Training the model
-        # startTraining(model, trainData, valData)
+        # Training the model
+        startTraining(model, trainData, valData)
 
