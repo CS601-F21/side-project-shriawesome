@@ -20,7 +20,6 @@ class DataLoader:
         self.__dataset = []
         self.__chars = set()
 
-
     """
     Constructs a path that contains a location for the images to be used for model development/ testing
     Parameters
@@ -33,7 +32,7 @@ class DataLoader:
     """
     def constructImgPath(self,data):
         fileName = data.split("-")
-        path = "../dataset/lines/"+fileName[0]+"/"+fileName[0]+"-"+fileName[1]+"/"+data+".png"
+        path = "../dataset/words/"+fileName[0]+"/"+fileName[0]+"-"+fileName[1]+"/"+data+".png"
         return path
 
 
@@ -92,18 +91,25 @@ class DataLoader:
     def getData(self):
         try:
             with open(self.metaFile) as file:
+                lineCount=0
+                maxLabel=0
                 for i,line in enumerate(file):
-                    if line[0]!="#":
-                        lineData = line.split()
+                    if line[0]!="#" and line.split(" ")[1]!="err":
+                        lineData = line.strip()
+                        lineData = line.split(" ")
                         imgPath = self.constructImgPath(lineData[0])
-                        
+
                         # Checks if the image size is 0
                         if not self.isBadImg(imgPath):
                             continue
-
-                        text = (" ".join(lineData[-1].split("|")))
+                    
+                        text = ("".join(lineData[-1].strip()))
+                        labels = text.split(" ")
+                        if len(text)>maxLabel:
+                            maxLabel=len(text)
                         # Get the character vocabulary for a given text
-                        text = self.processText(text.strip(),self.maxTextLen)
+                        # text = self.processText(text.strip(),self.maxTextLen)
+                        text = text.strip()
                         self.__chars = self.__chars.union(list(text))
                         self.__dataset.append(CombinedData(imgPath,text))
             
@@ -112,3 +118,9 @@ class DataLoader:
         except FileNotFoundError:
             print(self.metaFile," : ","File not found!!!")
         
+
+    def loadCharSet(self):
+        with open('../charList.txt') as file:
+            data = file.readlines()
+        
+        return data[0]
