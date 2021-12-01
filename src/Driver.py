@@ -5,6 +5,7 @@ from DataUtils import DataUtils
 import tensorflow as tf
 from tensorflow import keras
 import cv2
+from CTCLayer import CTCLayer
 
 import numpy as np
 
@@ -70,19 +71,25 @@ class Driver:
         yTrain = list(map(dataUtil.charToNum,yTrain))
         yVal = list(map(dataUtil.charToNum,yVal))
 
-        print(np.shape(yTrain))
-    
         # Creating efficient input pipelines for tensorflow
         trainData, valData = dataUtil.createPipeline(xTrain, yTrain, xVal, yVal)
         
         # Validate batches
+        # print(len(dataSet["Labels"]))
         # validateData(trainData,dataUtil)
+        #dataUtil.processSingleSample("/Users/shrikantkendre/Documents/USF/Sem1/PSD/side-project-shriawesome/dataset/words/a01/a01-000u/a01-000u-00-10.png","")
 
-        # # Creating Model Architecture
-        getModel = Model(dataSet["Labels"])
-        model = getModel.buildModel()
+        # # # Creating Model Architecture
+        # getModel = Model(dataSet["Labels"])
+        # model = getModel.buildModel()
         # model.summary()
+
+        # Loading saved model to resume training from last checkpoint
+        model = tf.keras.models.load_model(ModelConfig.SAVE_MODEL,custom_objects={'CTCLayer':CTCLayer})
 
         # Training the model
         startTraining(model, trainData, valData)
+    
 
+        # # Load the saved model
+        # #saveModel = tf.keras.models.load_model("../models/HWRModel_v3.h5", custom_objects={'CTCLayer':CTCLayer})
