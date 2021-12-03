@@ -26,13 +26,18 @@ def predictText(model,img):
     prediction = model.predict(img)
     return Model.decodePrediction(prediction)
 
-if __name__=="__main__":
+def main(imgPath=None):
     model = loadSaveModel()
-    imgPath = "/Users/shrikantkendre/Documents/USF/Sem1/PSD/side-project-shriawesome/dataset/words/a01/a01-000u/a01-000u-00-05.png"
+    #imgPath = "/Users/shrikantkendre/Documents/USF/Sem1/PSD/side-project-shriawesome/dataset/words/a01/a01-000u/a01-000u-00-05.png"
+   # imgPath = "test.png"
     #imgPath="/Users/shrikantkendre/Documents/USF/Sem1/PSD/side-project-shriawesome/dataset/test/good.png"
     loader = DataLoader(" ",100)
     charSet = loader.loadCharSet()
+    global dataUtil
     dataUtil = DataUtils(charSet)
     processedImg = getImg(imgPath)
     prediction = predictText(model,processedImg)
-    print(prediction)
+    return prediction
+
+if __name__=="__main__":
+    main(imgPath="test.png")
